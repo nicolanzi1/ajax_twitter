@@ -43,6 +43,6 @@ class UsersSearch {
             this.$ul.append($li);
         }
     }
-};
+}
 
 module.exports = UsersSearch;
