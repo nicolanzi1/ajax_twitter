@@ -48,6 +48,10 @@ header {
                 border-bottom: 3px solid rgb(101, 119, 134);
             }
 
+            form {
+                height: 100%;
+            }
+
             a, input[type='submit'] {
                 height: calc(100% - 40px);
                 padding: 20px;
