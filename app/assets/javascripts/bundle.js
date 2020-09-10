@@ -207,6 +207,88 @@ module.exports = FollowToggle;
 
 /***/ }),
 
+/***/ "./frontend/infinite_tweets.js":
+/*!*************************************!*\
+  !*** ./frontend/infinite_tweets.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const APIUtil = __webpack_require__(/*! ./api_util */ "./frontend/api_util.js");
+
+class InfiniteTweets {
+    constructor(el) {
+        this.$el = $(el);
+        this.maxCreatedAt = null;
+
+        this.$el.on('click', '.fetch-more', this.fetchTweets.bind(this));
+        this.$el.on('insert-tweet', this.insertTweet.bind(this));
+    }
+
+    fetchTweets(event) {
+        event.preventDefault();
+
+        const infiniteTweets = this;
+        const data = {};
+        if (this.lastCreatedAt) data.max_created_at = this.lastCreatedAt;
+
+        APIUtil.fetchTweets(data).then((data) => {
+            infiniteTweets.insertTweets(data);
+
+            if (data.length < 20) {
+                infiniteTweets.$el
+                    .find('.fetch-more')
+                    .replaceWith('<b>No more tweets!</b>');
+            }
+
+            if (data.length > 0) {
+                infiniteTweets.lastCreatedAt = data[data.length - 1].created_at;
+            }
+        });
+    }
+
+    insertTweet(event, data) {
+        this.$el.find('ul.tweets').prepend(this.tweetElement(data));
+
+        if (!this.lastCreatedAt) {
+            this.lastCreatedAt = data.created_at;
+        }
+    }
+
+    insertTweets(data) {
+        this.$el.find('ul.tweets').append(data.map(this.tweetElement));
+    }
+
+    tweetElement(tweet) {
+        const mentions = tweet.mentions.map(mention =>
+            `<li class='tweetee'>
+                <a href='/users/${mention.user.id}'>@${mention.user.username}</a>
+            </li>`)
+            .join('');
+
+        const elementString = `
+        <div class='tweet'>
+            <h3 class='tweeter'>
+                <a href='/users/${tweet.user.id}'>
+                    @${tweet.user.username}
+                </a>
+            </h3>
+
+            <p>${tweet.content}</p>
+
+            <ul>mentions
+                ${mentions}
+            </ul>
+        </div>`
+
+        return $(elementString);
+    }
+}
+
+module.exports = InfiniteTweets;
+
+/***/ }),
+
 /***/ "./frontend/tweet_compose.js":
 /*!***********************************!*\
   !*** ./frontend/tweet_compose.js ***!
@@ -223,11 +305,11 @@ class TweetCompose {
         this.$input = this.$el.find('textarea[name=tweet\\[content\\]]');
         this.$input.on('input', this.handleInput.bind(this));
 
-        this.$mentionedUsersDiv = this.$el.find('mentioned-users');
+        this.$mentionedUsersDiv = this.$el.find('.mentioned-users');
         this.$el.find('.add-mentioned-user').on(
             'click', this.addMentionedUser.bind(this));
         this.$mentionedUsersDiv.on(
-            'click', ',remove-mentioned-user', this.removeMentionedUser.bind(this));
+            'click', '.remove-mentioned-user', this.removeMentionedUser.bind(this));
 
         this.$el.on('submit', this.submit.bind(this));
     }
@@ -304,10 +386,12 @@ module.exports = TweetCompose;
 /***/ (function(module, exports, __webpack_require__) {
 
 const FollowToggle = __webpack_require__(/*! ./follow_toggle */ "./frontend/follow_toggle.js");
+const InfiniteTweets = __webpack_require__(/*! ./infinite_tweets */ "./frontend/infinite_tweets.js");
 const UsersSearch = __webpack_require__(/*! ./users_search */ "./frontend/users_search.js");
 const TweetCompose = __webpack_require__(/*! ./tweet_compose */ "./frontend/tweet_compose.js");
 
 $(function () {
+    $('div.infinite-tweets').each( (i, tweet) => new InfiniteTweets(tweet) );
     $('form.tweet-compose').each( (i, form) => new TweetCompose(form) );
     $('.users-search').each( (i, search) => new UsersSearch(search) );
     $('button.follow-toggle').each( (i, btn) => new FollowToggle(btn, {}) );

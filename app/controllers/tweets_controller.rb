@@ -18,6 +18,14 @@ class TweetsController < ApplicationController
     end
   end
 
+  def index
+    @tweets = Tweet.all.includes(:user, :mentioned_users)
+    respond_to do |format|
+      format.html { redirect_to request.referrer }
+      format.json { render :index }
+    end
+  end
+
   private
   def tweet_params
     params.require(:tweet).permit(:content, mentioned_user_ids: [])

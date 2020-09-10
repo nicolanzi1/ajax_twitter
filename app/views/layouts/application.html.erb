@@ -7,7 +7,7 @@
     <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Roboto:ital@1&family=Russo+One&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Russo+One&display=swap');
     </style>
     <script type='text/javascript'>
       window.users = <%= render("users/users.json.jbuilder", users: User.all).html_safe %>;

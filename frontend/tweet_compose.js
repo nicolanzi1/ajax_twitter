@@ -7,11 +7,11 @@ class TweetCompose {
         this.$input = this.$el.find('textarea[name=tweet\\[content\\]]');
         this.$input.on('input', this.handleInput.bind(this));
 
-        this.$mentionedUsersDiv = this.$el.find('mentioned-users');
+        this.$mentionedUsersDiv = this.$el.find('.mentioned-users');
         this.$el.find('.add-mentioned-user').on(
             'click', this.addMentionedUser.bind(this));
         this.$mentionedUsersDiv.on(
-            'click', ',remove-mentioned-user', this.removeMentionedUser.bind(this));
+            'click', '.remove-mentioned-user', this.removeMentionedUser.bind(this));
 
         this.$el.on('submit', this.submit.bind(this));
     }
