@@ -20,6 +20,24 @@ const APIUtil = {
             data: { query }
         })
     ),
+
+   createTweet: data => (
+       $.ajax({
+           url: '/tweets',
+           method: 'POST',
+           dataType: 'json',
+           data
+       })
+   ),
+
+   fetchTweets: data => (
+       $.ajax({
+           url: '/feed',
+           method: 'GET',
+           dataType: 'json',
+           data
+       })
+   )
 };
 
 module.exports = APIUtil;
